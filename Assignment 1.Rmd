@@ -1,0 +1,122 @@
+---
+title: "ASSIGNMENT 1 607"
+author: "Maliat"
+date: "2/5/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+setwd("C:/Users/malia/OneDrive/Desktop/MSDS DATA 607")
+library(tidyverse)
+library(magrittr)
+library(foreign)
+library(descr)
+library(lubridate)
+library(expss)
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(Hmisc)
+```
+
+
+```{r}
+# Analysis of Americans' concen regarding COVID 19 and President's Trumps approval rate:
+### For the purpose of this analysis an article from FiveThrirtyEight named "How Americans View The Coronavirus Crisis And Trump's Response" was chosen. This article quantifies that the AmericanS' concern about getting infected with COVID 19. The article also illustrates their concern about economy.
+### Alink to the article:https://projects.fivethirtyeight.com/coronavirus-polls/
+```
+###loading data frame.
+```{r}
+COVID_CONCERN <- read_csv("https://raw.githubusercontent.com/fivethirtyeight/covid-19-polls/master/covid_concern_polls_adjusted.csv")
+```
+```{r}
+head(COVID_CONCERN)
+```
+
+```{r}
+covid_approval_polls_n<-read_csv("https://raw.githubusercontent.com/fivethirtyeight/covid-19-polls/master/covid_approval_polls.csv")
+```
+###subsetting the data frame for the convinience of analysis.
+```{r}
+subset_COVID_CONCERN<-subset(COVID_CONCERN,select=c(subject,party,startdate,enddate,very,somewhat,not_very,not_at_all))
+head(subset_COVID_CONCERN)
+```
+
+```{r}
+subset_COVID_APPROVAL<-subset(COVID_CONCERN,select=c(subject,party,startdate,enddate,very,somewhat,not_very,not_at_all))
+head(subset_COVID_CONCERN)
+```
+
+```{r}
+head(covid_approval_polls_n)
+```
+
+```{r}
+subset_COVID_APPROVAL_POLLS<-subset(covid_approval_polls_n,select=c(pollster,sample_size,party,approve,disapprove))
+head(subset_COVID_APPROVAL_POLLS)
+```
+###omitting na variables
+
+```{r}
+na.omit(subset_COVID_CONCERN)
+```
+###The cross tabulatation refers that people are concerned about COVID 19.
+
+```{r}
+ crosstab(subset_COVID_CONCERN$subject, subset_COVID_CONCERN$very, prop.r = T, chisq = T, dnn=c("COVID-CONCERN", "Very Concerned about COVID"))
+```
+###filtering data on the basis of concern level:
+```{r}
+subset_COVID_CONCERN %>%
+  select(subject,startdate,very)%>%
+  filter(startdate %in% c("7/3/2020","7/5/2020,9/25/2020","10/16/2020"),subject%in%c("concern-infected"))
+           
+```
+```{r}
+subset_COVID_CONCERN %>%
+  select(subject,startdate,not_at_all)%>%
+  filter(startdate %in% c("7/3/2020","7/5/2020","9/25/2020","10/16/2020"),subject%in%c("concern-infected"))
+```
+
+```{r}
+subset_COVID_CONCERN %>%
+  select(subject,startdate,very)%>%
+  filter(startdate %in% c("9/7/2020","9/28/2020"),subject%in%c("concern-economy"))
+```
+```{r}
+subset_COVID_CONCERN %>%
+  select(subject,startdate,not_at_all)%>%
+  filter(startdate %in% c("9/25/2020","10/16/2020"),subject%in%c("concern-economy"))
+```
+
+### filtering data on the basis of approval and disapproval of response of the President Trump regarding the COVID 19.
+```{r}
+subset_COVID_APPROVAL_POLLS %>%
+  select(pollster,party,approve,disapprove)%>%
+  filter(pollster %in% c("Morning Consult"))
+
+
+
+```
+
+```{r}
+histogram(subset_COVID_APPROVAL_POLLS$approve,main = "Histogram 1",xlab = "Trends for approval for the President Trump",col = "blue")
+```
+
+```{r}
+histogram(subset_COVID_APPROVAL_POLLS$disapprove,main = "Histogram 2",xlab = "Trends for disapproval for the President Trump",col = "red")
+```
+
+```{r}
+ggplot()+
+  geom_line(data=subset_COVID_CONCERN$very.graph,aes(x=subset_COVID_CONCERN$subject,y=subset_COVID_CONCERN$very))+labs(title="Trends in support for anti-miscgeny laws from 1970 to 2010, GSS", x="subject",y="Proportions")
+```
+```{r}
+# Conclusion:
+### After conducting analysis through subsetting and filtering it appears that Americans are definitely concerned about COVID-19. However, people from the United States are likely to be more concerned about economy than getting infected. Moreover, people are likely to disaaprove President Trump's response rather than approving.
+```
+
